@@ -7,3 +7,5 @@ import xml.etree.ElementTree as ET
 input_fp = os.path.join(os.curdir, 'recipes.txt')
 input_file = open(input_fp, 'r')
 print input_file
+
+print "hola"
