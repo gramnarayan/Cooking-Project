@@ -2,6 +2,21 @@ import os
 import re
 import httplib2
 import xml.etree.ElementTree as ET
+from HTMLParser import HTMLParser
+
+class MyHTMLParser(HTMLParser):
+    found_ingredient = False
+    def handle_starttag(self, tag, attrs):
+        for element in attrs:
+            if element == ('class','floatleft itemUnit W420'):
+                print "Found ingredient"
+                self.found_ingredient = True
+
+    def handle_data(self, data):
+        if self.found_ingredient:
+            # Assuming this data is the ingredients
+            print "Ingredient: ", data
+            self.found_ingredient = False
 
 ingredients_dict = {}
 recipe_repetitions = {} # key: recipe URL value: repetitions
@@ -26,9 +41,8 @@ for recipe_and_rep in recipes_and_reps:
         print "HTTP Response Status: %s" % response['status']
         print "Recipe: " + recipe + " does not exist."
         continue
+    print content[:500] + "\n\n\n"
 
-    page_info = ET.parse(content)
-    page_root = page_info.getroot()
-    print "Root tag: %s" % page_root.tag
-#    for child in page_root:
-#        print "Tag: %s Attrib: %s" % (child.tag, child.attrib)
+    parser = MyHTMLParser()
+    parser.feed(content)
+
